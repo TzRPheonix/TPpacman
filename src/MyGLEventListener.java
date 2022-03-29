@@ -1,3 +1,4 @@
+import Modele.Pacman;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -13,7 +14,8 @@ import com.jogamp.newt.event.awt.AWTMouseAdapter;
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 
-	
+	Pacman pacman = new Pacman();
+	float angleF;
 	GLUT glut;
 	GLU glu;
 	
@@ -85,7 +87,7 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		
 		objectMouse = new SceneMouseAdapter(this);
-		objectKeys = new SceneKeyAdapter(this);
+		objectKeys = new SceneKeyAdapter(this,pacman);
 		
 		if (drawable instanceof Window) {
 			Window window = (Window) drawable;
@@ -324,6 +326,22 @@ public class MyGLEventListener implements GLEventListener {
 			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
 			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
 			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
+
+			gl.glEnd();
+
+			//Every push needs a pop !
+			gl.glPopMatrix();
+
+			gl.glColor3d(0, 1, 0);
+			gl.glPushMatrix();
+			gl.glTranslatef(pacman.getPositionX(), pacman.getPositionY(), pacman.getPositionZ());
+			glut.glutWireSphere(1, 10, 10);
+			gl.glPopMatrix();
+
+
+			angleF += 1f;
+
+			gl.glPopMatrix();
 
 			gl.glEnd();
 

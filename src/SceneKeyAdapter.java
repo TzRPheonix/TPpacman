@@ -31,7 +31,7 @@ public class SceneKeyAdapter extends KeyAdapter {
 
 
         if(KeyEvent.VK_LEFT == kc){
-            pacman.setPositionX(pacman.getPositionY() + -1);
+            pacman.setPositionX(pacman.getPositionZ() -1);
             System.out.println("Pacman se déplace vers la droite" + pacman.getPositionX());
 
         }
@@ -42,7 +42,7 @@ public class SceneKeyAdapter extends KeyAdapter {
         }
 
         if (KeyEvent.VK_RIGHT == kc){
-            pacman.setPositionX(pacman.getPositionY()  +1);
+            pacman.setPositionX(pacman.getPositionZ()  +1);
             System.out.println("Pacman se déplace vers la droite" + pacman.getPositionX());
         }
         if (KeyEvent.VK_DOWN == kc){
@@ -52,38 +52,38 @@ public class SceneKeyAdapter extends KeyAdapter {
 
         }
 
-        if(140 == kc) {
-            zoom += 0.1;
-            //System.out.println("Key pressed: zoom in="+zoom);
-        }
-
-        if(139 == kc) {
-            zoom -= 0.1;
-            //System.out.println("Key pressed: zoom out");
-        }
-
-        if(KeyEvent.VK_Q== kc) {
-            view_roty -= 1;
-            //System.out.println("Key pressed: view_roty="+view_roty);
-        }
-
-        else if(KeyEvent.VK_D == kc) {
-            view_roty += 1;
-            //System.out.println("Key pressed: view_roty="+view_roty);
-        }
-
-        else if(KeyEvent.VK_Z == kc) {
-            view_rotx -= 1;
-            //System.out.println("Key pressed: view_rotx="+view_rotx);
-        }
-
-        else if(KeyEvent.VK_S== kc) {
-            view_rotx += 1;
-            //System.out.println("Key pressed: view_rotx="+view_rotx);
-        }
-        else {
-            //System.out.println(e.getKeyCode());
-        }
+//        if(140 == kc) {
+//            zoom += 0.1;
+//            //System.out.println("Key pressed: zoom in="+zoom);
+//        }
+//
+//        if(139 == kc) {
+//            zoom -= 0.1;
+//            //System.out.println("Key pressed: zoom out");
+//        }
+//
+//        if(KeyEvent.VK_Q== kc) {
+//            view_roty -= 1;
+//            //System.out.println("Key pressed: view_roty="+view_roty);
+//        }
+//
+//        else if(KeyEvent.VK_D == kc) {
+//            view_roty += 1;
+//            //System.out.println("Key pressed: view_roty="+view_roty);
+//        }
+//
+//        else if(KeyEvent.VK_Z == kc) {
+//            view_rotx -= 1;
+//            //System.out.println("Key pressed: view_rotx="+view_rotx);
+//        }
+//
+//        else if(KeyEvent.VK_S== kc) {
+//            view_rotx += 1;
+//            //System.out.println("Key pressed: view_rotx="+view_rotx);
+//        }
+//        else {
+//            //System.out.println(e.getKeyCode());
+//        }
 
         myGLEventListener.setView_rotx(view_rotx);
         myGLEventListener.setView_roty(view_roty);

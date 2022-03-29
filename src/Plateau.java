@@ -29,26 +29,14 @@ public class Plateau {
                 coordLabySol.add(new Point2D(i,j));
             }
         }
-        if(tailleLaby % 2 == 0){
-            int cpt = 0;
-            for (int i = 0; i < tailleLaby; i++) {
-                for (int j = 0; j < tailleLaby; j += 2) {
-                    if (i > 1 && i < tailleLaby - 2 && i != (tailleLaby-1)/2 && i != (tailleLaby+1)/2) {
-                        coordLabyObs.add(new Point2D((i), (j)));
-                    }
-                }
-            }
-        }else {
-            {
-                for (int i = 0; i < tailleLaby; i++) {
-                    for (int j = 0; j < tailleLaby; j += 2) {
-                        if (i > 1 && i < tailleLaby - 2 && i != (tailleLaby-1)/2) {
-                            coordLabyObs.add(new Point2D((i), (j)));
-                        }
-                    }
+        for (int i = 0; i < tailleLaby; i++) {
+            for (int j = 0; j < tailleLaby; j += 2) {
+                if (i > 1 && i < tailleLaby - 2 && i != (tailleLaby - 1) / 2 && i != (tailleLaby + 1) / 2) {
+                    coordLabyObs.add(new Point2D((i), (j)));
                 }
             }
         }
+        
     }
 
 

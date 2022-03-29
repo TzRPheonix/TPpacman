@@ -1,8 +1,5 @@
-import Modele.Pacman;
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
-
-import java.security.Key;
 
 
 public class SceneKeyAdapter extends KeyAdapter {
@@ -29,27 +26,19 @@ public class SceneKeyAdapter extends KeyAdapter {
         view_rotx = myGLEventListener.getView_rotx();
         view_roty = myGLEventListener.getView_roty();
 
-
         if(KeyEvent.VK_LEFT == kc){
-            pacman.setPositionX(pacman.getPositionY() + -1);
-            System.out.println("Pacman se déplace vers la droite" + pacman.getPositionX());
-
+            pacman.setGauche(true);
         }
 
         if (KeyEvent.VK_UP == kc){
-            pacman.setPositionX(pacman.getPositionX() + 1);
-            System.out.println("Pacman se déplace vers le haut" + pacman.getPositionZ());
+            pacman.setHaut(true);
         }
 
         if (KeyEvent.VK_RIGHT == kc){
-            pacman.setPositionX(pacman.getPositionY()  +1);
-            System.out.println("Pacman se déplace vers la droite" + pacman.getPositionX());
+            pacman.setDroite(true);
         }
         if (KeyEvent.VK_DOWN == kc){
-
-            pacman.setPositionX(pacman.getPositionX()-1);
-            System.out.println("Pacman se déplace vers le haut" + pacman.getPositionZ());
-
+            pacman.setBas(true);
         }
 
         if(140 == kc) {

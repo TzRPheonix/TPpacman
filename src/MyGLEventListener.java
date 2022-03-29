@@ -1,4 +1,3 @@
-import Modele.Pacman;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -9,12 +8,13 @@ import com.jogamp.newt.Window;
 import com.jogamp.newt.event.awt.AWTKeyAdapter;
 import com.jogamp.newt.event.awt.AWTMouseAdapter;
 
+import java.util.ArrayList;
 
 
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 
-	Pacman pacman = new Pacman();
+	Pacman pacman = new Pacman(1,1);
 	float angleF;
 	GLUT glut;
 	GLU glu;
@@ -329,13 +329,84 @@ public class MyGLEventListener implements GLEventListener {
 
 			gl.glEnd();
 
+			ArrayList<Point2D> listImpo = new ArrayList<>();
+
+			for(int k = 0; k<P.coordLabyObs.size();k++){
+				listImpo.add(P.coordLabyObs.get(k));
+			}
+
+			for(int l = 0; l<P.coordLabyImpo.size();l++){
+				listImpo.add(P.coordLabyImpo.get(l));
+			}
+
 			//Every push needs a pop !
 			gl.glPopMatrix();
-
 			gl.glColor3d(0, 1, 0);
 			gl.glPushMatrix();
-			gl.glTranslatef(pacman.getPositionX(), pacman.getPositionY(), pacman.getPositionZ());
-			glut.glutWireSphere(1, 10, 10);
+
+			boolean basV = true;
+			if(pacman.isBas()){
+				Point2D test = new Point2D(pacman.getX()-1, pacman.getZ());
+				for(int p = 0; p<listImpo.size();p++){
+					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
+						basV = false;
+					}
+				}
+				if(basV) {
+					pacman.setX(pacman.getX() - 1);
+					System.out.println("Pacman se deplace vers le haut, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
+				}
+				pacman.setBas(false);
+			}
+
+			boolean hautV = true;
+			if(pacman.isHaut()){
+				Point2D test = new Point2D(pacman.getX()+1, pacman.getZ());
+				for(int p = 0; p<listImpo.size();p++){
+					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
+						hautV = false;
+					}
+				}
+				if(hautV){
+					pacman.setX(pacman.getX() + 1);
+					System.out.println("Pacman se deplace vers le haut, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
+				}
+				pacman.setHaut(false);
+			}
+
+			boolean droitV = true;
+			if(pacman.isDroite()){
+				Point2D test = new Point2D(pacman.getX(), pacman.getZ()+1);
+				for(int p = 0; p<listImpo.size();p++){
+					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
+						droitV = false;
+					}
+				}
+				if(droitV) {
+					pacman.setZ(pacman.getZ() + 1);
+					System.out.println("Pacman se deplace vers la droite, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
+				}
+				pacman.setDroite(false);
+			}
+
+			boolean gaucheV = true;
+			if(pacman.isGauche()){
+				Point2D test = new Point2D(pacman.getX(), pacman.getZ()-1);
+				for(int p = 0; p<listImpo.size();p++){
+					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
+						gaucheV = false;
+					}
+				}
+				if(gaucheV) {
+					pacman.setZ(pacman.getZ() -1);
+					System.out.println("Pacman se deplace vers la gauche, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
+				}
+				pacman.setGauche(false);
+			}
+
+
+			gl.glTranslatef(pacman.getX()+0.5f, 0, pacman.getZ()+0.5f);
+			glut.glutWireSphere(0.5, 10, 10);
 			gl.glPopMatrix();
 
 

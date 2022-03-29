@@ -1,10 +1,12 @@
 <component name="libraryTable">
   <library name="prog3D">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../../../Code/prog3D" />
       <root url="file://$PROJECT_DIR$/../Librairie/prog3D" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/../../../../../../Code/prog3D" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/../Librairie/prog3D" recursive="false" />
   </library>
 </component>

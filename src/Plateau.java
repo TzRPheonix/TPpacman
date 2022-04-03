@@ -14,19 +14,19 @@ public class Plateau {
     }
 
     public void genCoord(){
-        for(int i = 0; i<tailleLaby; i++){
-            coordLabyImpo.add(new Point2D(i,0));
+        for (int i = 0; i < tailleLaby; i++) {
+            coordLabyImpo.add(new Point2D(i, 0));
         }
-        for(int i = 1; i<tailleLaby; i++){
-            coordLabyImpo.add(new Point2D(0,i));
-            coordLabyImpo.add(new Point2D(i,tailleLaby-1));
+        for (int i = 1; i < tailleLaby; i++) {
+            coordLabyImpo.add(new Point2D(0, i));
+            coordLabyImpo.add(new Point2D(i, tailleLaby - 1));
         }
-        for(int i = 1; i<tailleLaby-1; i++){
-            coordLabyImpo.add(new Point2D(tailleLaby-1,i));
+        for (int i = 1; i < tailleLaby - 1; i++) {
+            coordLabyImpo.add(new Point2D(tailleLaby - 1, i));
         }
-        for(int i = 0; i<tailleLaby;i++){
-            for(int j = 0; j<tailleLaby;j++){
-                coordLabySol.add(new Point2D(i,j));
+        for (int i = 0; i < tailleLaby; i++) {
+            for (int j = 0; j < tailleLaby; j++) {
+                coordLabySol.add(new Point2D(i, j));
             }
         }
         for (int i = 0; i < tailleLaby; i++) {
@@ -37,8 +37,6 @@ public class Plateau {
             }
         }
     }
-
-
 
     public int getTailleLaby() {
         return tailleLaby;

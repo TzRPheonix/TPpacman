@@ -1,4 +1,4 @@
-public class Pacman{
+public class Entite {
     private int x;
     private int z;
     private boolean haut;
@@ -6,7 +6,7 @@ public class Pacman{
     private boolean droite;
     private boolean gauche;
 
-    public Pacman(int x, int z) {
+    public Entite(int x, int z) {
         this.x = x;
         this.z = z;
         this.haut = false;

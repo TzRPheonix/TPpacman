@@ -8,14 +8,14 @@ public class SceneKeyAdapter extends KeyAdapter {
     private float zoom = 1;
 
     private MyGLEventListener myGLEventListener;
-    private Pacman pacman;
+    private Entite entite;
 
 
-    public SceneKeyAdapter (MyGLEventListener _myGLEventListener,Pacman pacman) {
+    public SceneKeyAdapter (MyGLEventListener _myGLEventListener, Entite entite) {
         myGLEventListener = _myGLEventListener;
         view_rotx = _myGLEventListener.getView_rotx();
         view_roty = _myGLEventListener.getView_roty();
-        this.pacman = pacman;
+        this.entite = entite;
     }
 
 
@@ -27,18 +27,19 @@ public class SceneKeyAdapter extends KeyAdapter {
         view_roty = myGLEventListener.getView_roty();
 
         if(KeyEvent.VK_LEFT == kc){
-            pacman.setGauche(true);
+            entite.setGauche(true);
+
         }
 
         if (KeyEvent.VK_UP == kc){
-            pacman.setHaut(true);
+            entite.setHaut(true);
         }
 
         if (KeyEvent.VK_RIGHT == kc){
-            pacman.setDroite(true);
+            entite.setDroite(true);
         }
         if (KeyEvent.VK_DOWN == kc){
-            pacman.setBas(true);
+            entite.setBas(true);
         }
 
         if(140 == kc) {

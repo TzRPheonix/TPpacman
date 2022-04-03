@@ -9,12 +9,23 @@ import com.jogamp.newt.event.awt.AWTKeyAdapter;
 import com.jogamp.newt.event.awt.AWTMouseAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 
-	Pacman pacman = new Pacman(1,1);
+	Entite pacman = new Entite(1,1);
+	int depla = 0;
+	int lockPlateau = 0;
+	Plateau P = new Plateau(15); //taille => 10 sinon chiant
+	Entite fantome = new Entite(P.getTailleLaby()-2,P.getTailleLaby()-2);
+	Entite bonusA = new Entite(P.getTailleLaby()-2,1);
+	Entite bonusB = new Entite(1,P.getTailleLaby()-2);
+	boolean bonusAtaken = false;
+	boolean bonusBtaken = false;
+	boolean pouvoir = false;
+	int pouvoirDuration = 0;
 	float angleF;
 	GLUT glut;
 	GLU glu;
@@ -87,7 +98,7 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		
 		objectMouse = new SceneMouseAdapter(this);
-		objectKeys = new SceneKeyAdapter(this,pacman);
+		objectKeys = new SceneKeyAdapter(this, pacman);
 		
 		if (drawable instanceof Window) {
 			Window window = (Window) drawable;
@@ -151,8 +162,11 @@ public class MyGLEventListener implements GLEventListener {
 		
 		gl.glLoadIdentity();
 
-		Plateau P = new Plateau(15); //taille => 10 sinon chiant
-		P.genCoord();
+		if(lockPlateau == 0){
+			P.genCoord();
+		}
+		lockPlateau = 1;
+
 
 		glu.gluLookAt(camera[0], camera[1]+scale, camera[2], //position
 				P.getTailleLaby()/2.0f, 0.0f, 0.0f, //regarde
@@ -289,137 +303,280 @@ public class MyGLEventListener implements GLEventListener {
 
 			Point3D[] coords = {A1, A2, A3, A4, A5, A6, A7, A8};
 
-			gl.glColor3d(1, 1, 0);
-			gl.glPushMatrix();
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
-			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
-			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
-			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
-
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
-			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
-			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
-			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
-
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
-			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
-			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
-			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
-
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
-			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
-			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
-			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
-
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
-			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
-			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
-			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
-
-			gl.glBegin(GL2.GL_QUADS);
-			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
-			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
-			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
-			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
-
-			gl.glEnd();
-
-			ArrayList<Point2D> listImpo = new ArrayList<>();
-
-			for(int k = 0; k<P.coordLabyObs.size();k++){
-				listImpo.add(P.coordLabyObs.get(k));
-			}
-
-			for(int l = 0; l<P.coordLabyImpo.size();l++){
-				listImpo.add(P.coordLabyImpo.get(l));
-			}
-
-			//Every push needs a pop !
-			gl.glPopMatrix();
 			gl.glColor3d(0, 1, 0);
 			gl.glPushMatrix();
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
+			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
+			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
+			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
 
-			boolean basV = true;
-			if(pacman.isBas()){
-				Point2D test = new Point2D(pacman.getX()-1, pacman.getZ());
-				for(int p = 0; p<listImpo.size();p++){
-					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
-						basV = false;
-					}
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
+			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
+			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
+			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
+
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[2].getPx(), coords[2].getPy() * Math.sqrt(3) / 2, coords[2].getPz());
+			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
+			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
+			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
+
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
+			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
+			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
+			gl.glVertex3d(coords[3].getPx(), coords[3].getPy() * Math.sqrt(3) / 2, coords[3].getPz());
+
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
+			gl.glVertex3d(coords[5].getPx(), coords[5].getPy() * Math.sqrt(3) / 2, coords[5].getPz());
+			gl.glVertex3d(coords[4].getPx(), coords[4].getPy() * Math.sqrt(3) / 2, coords[4].getPz());
+			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
+
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3d(coords[1].getPx(), coords[1].getPy() * Math.sqrt(3) / 2, coords[1].getPz());
+			gl.glVertex3d(coords[6].getPx(), coords[6].getPy() * Math.sqrt(3) / 2, coords[6].getPz());
+			gl.glVertex3d(coords[7].getPx(), coords[7].getPy() * Math.sqrt(3) / 2, coords[7].getPz());
+			gl.glVertex3d(coords[0].getPx(), coords[0].getPy() * Math.sqrt(3) / 2, coords[0].getPz());
+
+
+			gl.glEnd();
+			gl.glPopMatrix();
+		}
+
+		if(pacman.getX() == bonusA.getX() && pacman.getZ() == bonusA.getZ() && !bonusAtaken){ //Vérification position pacman + Bonus encore présent
+			bonusAtaken = true;
+			pouvoir = true;
+			pouvoirDuration = 0;  // prendre des pouvoirs en même temps réinitialise la durée du pouvoir
+		}
+
+		if(pacman.getX() == bonusB.getX() && pacman.getZ() == bonusB.getZ() && !bonusBtaken){
+			bonusBtaken = true;
+			pouvoir = true;
+			pouvoirDuration = 0;
+		}
+
+		ArrayList<Point2D> fantoDeplaImpo = new ArrayList<>();
+
+		//Ajout constant dans une liste des cases autours du fantôme
+		ArrayList<Point2D> fantoDepla = new ArrayList<>();
+		Point2D hautFantome = new Point2D(fantome.getX()+1, fantome.getZ());
+		Point2D basFantome = new Point2D(fantome.getX()-1, fantome.getZ());
+		Point2D droiteFantome = new Point2D(fantome.getX(), fantome.getZ()+1);
+		Point2D gaucheFantome = new Point2D(fantome.getX(), fantome.getZ()-1);
+		fantoDepla.add(hautFantome);
+		fantoDepla.add(basFantome);
+		fantoDepla.add(droiteFantome);
+		fantoDepla.add(gaucheFantome);
+
+		boolean basV = true;
+		if(pacman.isBas()){
+			Point2D test = new Point2D(pacman.getX()-1, pacman.getZ());
+			for(int p = 0; p<P.coordLabyObs.size();p++){
+				if(P.coordLabyObs.get(p).getX() == test.getX() && P.coordLabyObs.get(p).getY() == test.getY()){
+					basV = false;
 				}
-				if(basV) {
-					pacman.setX(pacman.getX() - 1);
-					System.out.println("Pacman se deplace vers le haut, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
+			}  //check si la case n'est pas occupée par un obstacle
+			for(int p = 0; p<P.coordLabyImpo.size();p++){
+				if(P.coordLabyImpo.get(p).getX() == test.getX() && P.coordLabyImpo.get(p).getY() == test.getY()){
+					basV = false;
 				}
-				pacman.setBas(false);
+			}  //check si la case n'est pas occupée par un mur
+			if(basV) {
+				pacman.setX(pacman.getX() - 1);
 			}
+			pacman.setBas(false);
+		}
 
-			boolean hautV = true;
-			if(pacman.isHaut()){
-				Point2D test = new Point2D(pacman.getX()+1, pacman.getZ());
-				for(int p = 0; p<listImpo.size();p++){
-					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
-						hautV = false;
-					}
+		boolean hautV = true;
+		if(pacman.isHaut()){
+			Point2D test = new Point2D(pacman.getX()+1, pacman.getZ());
+			for(int p = 0; p<P.coordLabyObs.size();p++){
+				if(P.coordLabyObs.get(p).getX() == test.getX() && P.coordLabyObs.get(p).getY() == test.getY()){
+					hautV = false;
 				}
-				if(hautV){
-					pacman.setX(pacman.getX() + 1);
-					System.out.println("Pacman se deplace vers le haut, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
-				}
-				pacman.setHaut(false);
 			}
-
-			boolean droitV = true;
-			if(pacman.isDroite()){
-				Point2D test = new Point2D(pacman.getX(), pacman.getZ()+1);
-				for(int p = 0; p<listImpo.size();p++){
-					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
-						droitV = false;
-					}
+			for(int p = 0; p<P.coordLabyImpo.size();p++){
+				if(P.coordLabyImpo.get(p).getX() == test.getX() && P.coordLabyImpo.get(p).getY() == test.getY()){
+					hautV = false;
 				}
-				if(droitV) {
-					pacman.setZ(pacman.getZ() + 1);
-					System.out.println("Pacman se deplace vers la droite, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
-				}
-				pacman.setDroite(false);
 			}
-
-			boolean gaucheV = true;
-			if(pacman.isGauche()){
-				Point2D test = new Point2D(pacman.getX(), pacman.getZ()-1);
-				for(int p = 0; p<listImpo.size();p++){
-					if(listImpo.get(p).getX() == test.getX() && listImpo.get(p).getY() == test.getY()){
-						gaucheV = false;
-					}
-				}
-				if(gaucheV) {
-					pacman.setZ(pacman.getZ() -1);
-					System.out.println("Pacman se deplace vers la gauche, il est en X :" + pacman.getX() + " Y :" + pacman.getZ());
-				}
-				pacman.setGauche(false);
+			if(hautV){
+				pacman.setX(pacman.getX() + 1);
 			}
+			pacman.setHaut(false);
+		}
 
+		boolean droitV = true;
+		if(pacman.isDroite()){
+			Point2D test = new Point2D(pacman.getX(), pacman.getZ()+1);
+			for(int p = 0; p<P.coordLabyObs.size();p++){
+				if(P.coordLabyObs.get(p).getX() == test.getX() && P.coordLabyObs.get(p).getY() == test.getY()){
+					droitV = false;
+				}
+			}
+			for(int p = 0; p<P.coordLabyImpo.size();p++){
+				if(P.coordLabyImpo.get(p).getX() == test.getX() && P.coordLabyImpo.get(p).getY() == test.getY()){
+					droitV = false;
+				}
+			}
+			if(droitV) {
+				pacman.setZ(pacman.getZ() + 1);
+			}
+			pacman.setDroite(false);
+		}
+		boolean gaucheV = true;
+		if(pacman.isGauche()){
+			Point2D test = new Point2D(pacman.getX(), pacman.getZ()-1);
+			for(int p = 0; p<P.coordLabyObs.size();p++){
+				if(P.coordLabyObs.get(p).getX() == test.getX() && P.coordLabyObs.get(p).getY() == test.getY()){
+					gaucheV = false;
+				}
+			}
+			for(int p = 0; p<P.coordLabyImpo.size();p++){
+				if(P.coordLabyImpo.get(p).getX() == test.getX() && P.coordLabyImpo.get(p).getY() == test.getY()){
+					gaucheV = false;
+				}
+			}
+			if(gaucheV) {
+				pacman.setZ(pacman.getZ() -1);
+			}
+			pacman.setGauche(false);
+		}
+
+		if(!pouvoir) { //changement de pacman en fonction pouvoir
+			gl.glColor3d(1, 1, 0);
+			gl.glPushMatrix();
+
+			gl.glTranslatef(pacman.getX() + 0.5f, 0, pacman.getZ() + 0.5f);
+			glut.glutWireSphere(0.4, 10, 10);
+
+			gl.glEnd();
+			gl.glPopMatrix();
+		}else{
+			gl.glColor3d(1, 1, 1);
+			gl.glPushMatrix();
 
 			gl.glTranslatef(pacman.getX()+0.5f, 0, pacman.getZ()+0.5f);
 			glut.glutWireSphere(0.5, 10, 10);
+
+			gl.glEnd();
 			gl.glPopMatrix();
+		}
+
+
+		String direct = "pas encore choisi";
+		if(depla == 15) { //tic du fantome initialisé à 15 (+ grande valeur = fantome plus lent)
+			for (int n = 0; n < fantoDepla.size(); n++) {
+				for(int m = 0; m < P.coordLabyObs.size(); m++){
+					if (P.coordLabyObs.get(m).getX() == fantoDepla.get(n).getX() && P.coordLabyObs.get(m).getY() == fantoDepla.get(n).getY()){
+						fantoDeplaImpo.add(P.coordLabyObs.get(m));
+					}
+				}
+			} //ajout dans une liste des positions que le fantôme ne peut pas atteindre en fonction des obstacles
+			for (int n = 0; n < fantoDepla.size(); n++) {
+				for(int m = 0; m < P.coordLabyImpo.size(); m++){
+					if (P.coordLabyImpo.get(m).getX() == fantoDepla.get(n).getX() && P.coordLabyImpo.get(m).getY() == fantoDepla.get(n).getY()){
+						fantoDeplaImpo.add(P.coordLabyImpo.get(m));
+					}
+				}
+			} //ajout dans une liste des positions que le fantôme ne peut pas atteindre en fonction des murs
+			ArrayList<String> deplaListe = new ArrayList<>(Arrays.asList("bas","haut","droite","gauche"));
+			for(int i = 0; i<fantoDeplaImpo.size();i++){
+				if(fantoDeplaImpo.get(i).getX() == basFantome.getX() && fantoDeplaImpo.get(i).getY() == basFantome.getY()){
+					deplaListe.remove("bas");
+				}
+				if(fantoDeplaImpo.get(i).getX() == hautFantome.getX() && fantoDeplaImpo.get(i).getY() == hautFantome.getY()){
+					deplaListe.remove("haut");
+				}
+				if(fantoDeplaImpo.get(i).getX() == droiteFantome.getX() && fantoDeplaImpo.get(i).getY() == droiteFantome.getY()){
+					deplaListe.remove("droite");
+				}
+				if(fantoDeplaImpo.get(i).getX() == gaucheFantome.getX() && fantoDeplaImpo.get(i).getY() == gaucheFantome.getY()){
+					deplaListe.remove("gauche");
+				}
+			} 	// trie de la liste en y laissant que les choix possible pour le fantome
+			int choixRandom = (int) (Math.random() * deplaListe.size());
+				// choix aléatoire dans les choix restants
+			direct = deplaListe.get(choixRandom);
+
+			depla = 0;
+		}
+
+		if(direct.equals("bas")){
+			fantome.setX(fantome.getX() - 1);
+			fantome.setBas(false);
+		}
+		if(direct.equals("haut")){
+			fantome.setX(fantome.getX() + 1);
+			fantome.setHaut(false);
+		}
+		if(direct.equals("droite")){
+			fantome.setZ(fantome.getZ() + 1);
+			fantome.setDroite(false);
+		}
+		if(direct.equals("gauche")){
+			fantome.setZ(fantome.getZ() -1);
+			fantome.setGauche(false);
+		}
+
+		gl.glColor3d(0, 1, 1);
+		gl.glPushMatrix();
+
+		gl.glTranslatef(fantome.getX()+0.5f, 0, fantome.getZ()+0.5f);
+		glut.glutWireSphere(0.5, 10, 10);
+
+		gl.glEnd();
+		gl.glPopMatrix();
+
+		gl.glColor3d(1, 0, 0);
+		if(!bonusAtaken) {	//affichage bonus A
+			gl.glPushMatrix();
+
+			gl.glTranslatef(bonusA.getX() + 0.5f, 0, bonusA.getZ() + 0.5f);
+			glut.glutWireSphere(0.3, 10, 10);
+
+			gl.glEnd();
+			gl.glPopMatrix();
+		}
+
+		if(!bonusBtaken) {	//affichage bonus B
+			gl.glPushMatrix();
+
+			gl.glTranslatef(bonusB.getX() + 0.5f, 0, bonusB.getZ() + 0.5f);
+			glut.glutWireSphere(0.3, 10, 10);
+
+			gl.glEnd();
+			gl.glPopMatrix();
+		}
+
+
+
+
+		//fin du jeu sur superposition de pacman et du fantôme -> décision selon pouvoir (Pas nécessaire)
+		//if(pacman.getX() == fantome.getX() && fantome.getZ() == pacman.getZ() && !pouvoir) {
+		//	System.out.println("Vous avez perdu !");
+		//	System.exit(0);
+		//}
+
+		if(pacman.getX() == fantome.getX() && fantome.getZ() == pacman.getZ() && pouvoir){
+			System.out.println("Vous avez gagne !");
+			System.exit(0);
+		}
+
 
 
 			angleF += 1f;
-
-			gl.glPopMatrix();
-
-			gl.glEnd();
-
-			//Every push needs a pop !
-			gl.glPopMatrix();
+			depla += 1;
+			if(pouvoirDuration > 250){	//Durée du pouvoir
+				pouvoir = false;
+			}
+			if(pouvoir){
+				pouvoirDuration += 1;
+			}
 		}
-	}
 
 
 

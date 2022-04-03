@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class MyGLEventListener implements GLEventListener {
 
 
-    private int duree = 0;
+    private int dureAnimation = 0;
     private boolean test = true;
     Entite pacman = new Entite(1, 1);
     int deplaFTick = 0;
@@ -174,7 +174,7 @@ public class MyGLEventListener implements GLEventListener {
 
 
         glu.gluLookAt(camera[0], camera[1] + scale, camera[2], //position
-                P.getTailleLaby() / 2.0f, 0.0f, 0.0f, //regarde
+                P.getTailleLaby() / 2.0f, 0.0f, 5, //regarde
                 0.0f, 1.0f, 0.0f);
 
         gl.glRotatef(view_rotx, 1.0f, 0.0f, 0.0f);
@@ -449,11 +449,11 @@ public class MyGLEventListener implements GLEventListener {
         int maxStep = 9;
 
 
-        if (duree == 15) {
+        if (dureAnimation == 15) {
             maxStep = setAnimation();
-            setDuree();
+            setdureAnimation();
         } else {
-            duree += 1;
+            dureAnimation += 1;
         }
 
 
@@ -477,11 +477,8 @@ public class MyGLEventListener implements GLEventListener {
             }
 
             gl.glVertex3d(Math.sin(j) * Math.cos(maxPas), Math.cos(j), Math.sin(j) * Math.sin(maxPas));
-
             gl.glVertex3d(Math.sin(a1) * Math.cos(maxPas), Math.cos(a1), Math.sin(a1) * Math.sin(maxPas));
-
             gl.glVertex3d(0, Math.cos(a1), 0);
-
             gl.glVertex3d(0, Math.cos(j), 0);
 
             gl.glEnd();
@@ -696,8 +693,8 @@ public class MyGLEventListener implements GLEventListener {
         return view_rotx;
     }
 
-    public void setDuree() {
-        this.duree = 0;
+    public void setdureAnimation() {
+        this.dureAnimation = 0;
     }
 
     public void setView_rotx(float view_rotx) {

@@ -19,7 +19,7 @@ public class MyGLEventListener implements GLEventListener {
     private int duree = 0;
     private boolean test = true;
     Entite pacman = new Entite(1, 1);
-    int depla = 0;
+    int deplaFTick = 0;
     int lockPlateau = 0;
     Plateau P = new Plateau(15); //taille => 10 sinon chiant
     Entite fantome = new Entite(P.getTailleLaby() - 2, P.getTailleLaby() - 2);
@@ -27,6 +27,10 @@ public class MyGLEventListener implements GLEventListener {
     Entite bonusB = new Entite(1, P.getTailleLaby() - 2);
     boolean bonusAtaken = false;
     boolean bonusBtaken = false;
+    boolean pacmanGauche = false;
+    boolean pacmanDroite = false;
+    boolean pacmanHaut = false;
+    boolean pacmanBas = false;
     boolean pouvoir = false;
     int pouvoirDuration = 0;
     float angleF;
@@ -377,6 +381,7 @@ public class MyGLEventListener implements GLEventListener {
         deplaFantome();
 
 
+
         gl.glColor3d(0, 1, 1);
         gl.glPushMatrix();
 
@@ -426,12 +431,25 @@ public class MyGLEventListener implements GLEventListener {
 
 
         gl.glTranslatef(pacman.getX() + 0.5f, 0.5f, pacman.getZ() + 0.5f);
+
+        if(pacmanGauche){
+            gl.glRotatef(90,0,1,0);
+        }
+        if(pacmanBas){
+            gl.glRotatef(180,0,1,0);
+        }
+        if(pacmanDroite){
+            gl.glRotatef(270,0,1,0);
+        }
+        if(pacmanHaut){
+            gl.glRotatef(360,0,1,0);
+        }
         gl.glScaled(0.5, 0.5, 0.5);
         int step = 1;
         int maxStep = 9;
 
 
-        if (duree == 5) {
+        if (duree == 15) {
             maxStep = setAnimation();
             setDuree();
         } else {
@@ -440,13 +458,11 @@ public class MyGLEventListener implements GLEventListener {
 
 
         double maxPas = (2 * Math.PI - (angleDebut - ((double) step / (double) maxStep)));
-        /*Début dessin*/
         double angle = (Math.PI / 12);
-
-
         for (double j = 0; j < Math.PI; j += angle) {
             double b1;
             double a1 = j + angle;
+            gl.glPushMatrix();
             gl.glBegin(GL2.GL_QUADS);
 
             for (double i = angleDebut; i < maxPas; i += angle) {
@@ -470,22 +486,47 @@ public class MyGLEventListener implements GLEventListener {
 
             gl.glEnd();
 
-            gl.glPushMatrix();
+            gl.glPopMatrix();
         }
-
-        gl.glPopMatrix();
 
         if (pacman.getX() == fantome.getX() && fantome.getZ() == pacman.getZ() && pouvoir) {
             System.out.println("Vous avez gagne !");
             System.exit(0);
         }
         angleF += 1f;
-        depla += 1;
+        deplaFTick += 1;
         if (pouvoirDuration > 400) {    //Durée du pouvoir
             pouvoir = false;
         }
         if (pouvoir) {
             pouvoirDuration += 1;
+        }
+    }
+
+    public void rotationPacman(String direct){
+        if(direct.equals("gauche")){
+            pacmanGauche = true;
+            pacmanBas = false;
+            pacmanHaut = false;
+            pacmanDroite = false;
+        }
+        if(direct.equals("droite")){
+            pacmanGauche = false;
+            pacmanBas = false;
+            pacmanHaut = false;
+            pacmanDroite = true;
+        }
+        if(direct.equals("haut")){
+            pacmanGauche = false;
+            pacmanBas = false;
+            pacmanHaut = true;
+            pacmanDroite = false;
+        }
+        if(direct.equals("bas")){
+            pacmanGauche = false;
+            pacmanBas = true;
+            pacmanHaut = false;
+            pacmanDroite = false;
         }
     }
 
@@ -506,6 +547,7 @@ public class MyGLEventListener implements GLEventListener {
             if (basV) {
                 pacman.setX(pacman.getX() - 1);
             }
+            rotationPacman("bas");
             pacman.setBas(false);
         }
 
@@ -525,6 +567,7 @@ public class MyGLEventListener implements GLEventListener {
             if (hautV) {
                 pacman.setX(pacman.getX() + 1);
             }
+            rotationPacman("haut");
             pacman.setHaut(false);
         }
 
@@ -544,8 +587,10 @@ public class MyGLEventListener implements GLEventListener {
             if (droitV) {
                 pacman.setZ(pacman.getZ() + 1);
             }
+            rotationPacman("droite");
             pacman.setDroite(false);
         }
+
         boolean gaucheV = true;
         if (pacman.isGauche()) {
             Point2D test = new Point2D(pacman.getX(), pacman.getZ() - 1);
@@ -562,6 +607,7 @@ public class MyGLEventListener implements GLEventListener {
             if (gaucheV) {
                 pacman.setZ(pacman.getZ() - 1);
             }
+            rotationPacman("gauche");
             pacman.setGauche(false);
         }
     }
@@ -580,7 +626,7 @@ public class MyGLEventListener implements GLEventListener {
         fantoDepla.add(gaucheFantome);
 
         String direct = "pas encore choisi";
-        if (depla == 15) { //tic du fantome initialisé à 15 (+ grande valeur = fantome plus lent)
+        if (deplaFTick == 15) { //tic du fantome initialisé à 15 (+ grande valeur = fantome plus lent)
             for (int n = 0; n < fantoDepla.size(); n++) {
                 for (int m = 0; m < P.coordLabyObs.size(); m++) {
                     if (P.coordLabyObs.get(m).getX() == fantoDepla.get(n).getX() && P.coordLabyObs.get(m).getY() == fantoDepla.get(n).getY()) {
@@ -612,23 +658,19 @@ public class MyGLEventListener implements GLEventListener {
             }    // trie de la liste en y laissant que les choix possible pour le fantome
             int choixRandom = (int) (Math.random() * deplaListe.size());
             // choix aléatoire dans les choix restants
-            depla = 0;
+            deplaFTick = 0;
             direct = deplaListe.get(choixRandom);
             if (direct.equals("bas")) {
                 fantome.setX(fantome.getX() - 1);
-                fantome.setBas(false);
             }
             if (direct.equals("haut")) {
                 fantome.setX(fantome.getX() + 1);
-                fantome.setHaut(false);
             }
             if (direct.equals("droite")) {
                 fantome.setZ(fantome.getZ() + 1);
-                fantome.setDroite(false);
             }
             if (direct.equals("gauche")) {
                 fantome.setZ(fantome.getZ() - 1);
-                fantome.setGauche(false);
             }
         }
     }

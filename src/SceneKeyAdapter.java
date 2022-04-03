@@ -28,7 +28,6 @@ public class SceneKeyAdapter extends KeyAdapter {
 
         if(KeyEvent.VK_LEFT == kc){
             entite.setGauche(true);
-
         }
 
         if (KeyEvent.VK_UP == kc){

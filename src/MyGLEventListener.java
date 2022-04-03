@@ -15,6 +15,9 @@ import java.util.Arrays;
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 
+
+	private int duree = 0 ;
+	private boolean test = true;
 	Entite pacman = new Entite(1,1);
 	int depla = 0;
 	int lockPlateau = 0;
@@ -38,7 +41,7 @@ public class MyGLEventListener implements GLEventListener {
 	private float scale = 5.0f;
 	private float aspect;
 	
-	//Predefined colors
+	//PredemaxPased colors
 	float red[] = { 0.8f, 0.1f, 0.0f, 0.7f };
 	float green[] = { 0.0f, 0.8f, 0.2f, 0.7f };
 	float blue[] = { 0.2f, 0.2f, 1.0f, 0.7f };
@@ -287,9 +290,24 @@ public class MyGLEventListener implements GLEventListener {
 			gl.glEnd();
 
 			//Every push needs a pop !
+
+
 			gl.glPopMatrix();
+
+
+
+
+
 		}
 
+
+
+
+		/*maxPas dessin*/
+
+
+		
+		
 
 		for(int i = 0; i< P.coordLabyObs.size();i++) {
 			Point3D A1 = new Point3D(P.coordLabyObs.get(i).getX(), 0, P.coordLabyObs.get(i).getY()); //devant en bas à gauche
@@ -446,25 +464,6 @@ public class MyGLEventListener implements GLEventListener {
 			pacman.setGauche(false);
 		}
 
-		if(!pouvoir) { //changement de pacman en fonction pouvoir
-			gl.glColor3d(1, 1, 0);
-			gl.glPushMatrix();
-
-			gl.glTranslatef(pacman.getX() + 0.5f, 0, pacman.getZ() + 0.5f);
-			glut.glutWireSphere(0.4, 10, 10);
-
-			gl.glEnd();
-			gl.glPopMatrix();
-		}else{
-			gl.glColor3d(1, 1, 1);
-			gl.glPushMatrix();
-
-			gl.glTranslatef(pacman.getX()+0.5f, 0, pacman.getZ()+0.5f);
-			glut.glutWireSphere(0.5, 10, 10);
-
-			gl.glEnd();
-			gl.glPopMatrix();
-		}
 
 
 		String direct = "pas encore choisi";
@@ -555,31 +554,107 @@ public class MyGLEventListener implements GLEventListener {
 
 
 
-		//fin du jeu sur superposition de pacman et du fantôme -> décision selon pouvoir (Pas nécessaire)
+		//maxPas du jeu sur superposition de pacman et du fantôme -> décision selon pouvoir (Pas nécessaire)
 		//if(pacman.getX() == fantome.getX() && fantome.getZ() == pacman.getZ() && !pouvoir) {
 		//	System.out.println("Vous avez perdu !");
 		//	System.exit(0);
 		//}
 
+
+
+		double angleDebut = (Math.PI / 6);
+
+		if (pouvoir){
+			gl.glColor3d(1,1,1);;
+		}
+		else{
+			gl.glColor3d(1,1,0);
+		}
+
+
+
+		gl.glTranslatef(pacman.getX() + 0.5f,0.5f,pacman.getZ() + 0.5f);
+		gl.glScaled(0.5,0.5,0.5 );
+		int step = 1;
+		int maxStep = 9;
+
+
+		if (duree == 5){
+			maxStep = setAnimation();
+			setDuree();
+		}else{
+			duree +=1;
+		}
+
+
+		double maxPas = (2 * Math.PI - (angleDebut - ((double) step / (double) maxStep)));
+		/*Début dessin*/
+		double angle = (Math.PI / 12);
+
+
+
+		for (double j = 0; j < Math.PI; j+= angle)
+		{
+			double b1;
+			double a1 = j + angle;
+			gl.glBegin(GL2.GL_QUADS);
+
+			for (double i = angleDebut; i < maxPas; i+= angle) {
+				b1 = i + angle;
+				if (b1 > maxPas) b1 = maxPas;
+
+				gl.glVertex3d(Math.sin(j) * Math.cos(i), Math.cos(j), Math.sin(j) * Math.sin(i));
+				gl.glVertex3d(Math.sin(a1) * Math.cos(i), Math.cos(a1), Math.sin(a1) * Math.sin(i));
+				gl.glVertex3d(Math.sin(a1) * Math.cos(b1), Math.cos(a1), Math.sin(a1) * Math.sin(b1));
+				gl.glVertex3d(Math.sin(j) * Math.cos(b1), Math.cos(j), Math.sin(j) * Math.sin(b1));
+
+			}
+
+			gl.glVertex3d(Math.sin(j) * Math.cos(maxPas), Math.cos(j), Math.sin(j) * Math.sin(maxPas));
+
+			gl.glVertex3d(Math.sin(a1) * Math.cos(maxPas), Math.cos(a1), Math.sin(a1) * Math.sin(maxPas));
+
+			gl.glVertex3d(0, Math.cos(a1), 0);
+
+			gl.glVertex3d(0, Math.cos(j), 0);
+
+			gl.glEnd();
+
+			gl.glPushMatrix();
+		}
+
+		gl.glPopMatrix();
+
 		if(pacman.getX() == fantome.getX() && fantome.getZ() == pacman.getZ() && pouvoir){
 			System.out.println("Vous avez gagne !");
 			System.exit(0);
 		}
-
-
-
-			angleF += 1f;
-			depla += 1;
-			if(pouvoirDuration > 250){	//Durée du pouvoir
-				pouvoir = false;
-			}
-			if(pouvoir){
-				pouvoirDuration += 1;
-			}
+		angleF += 1f;
+		depla += 1;
+		if(pouvoirDuration > 400){	//Durée du pouvoir
+			pouvoir = false;
+		}
+		if(pouvoir){
+			pouvoirDuration += 1;
 		}
 
 
+	}
 
+
+
+	public int setAnimation(){
+		int steps = 0;
+		if (test){
+			steps = 1;
+			this.test = false;
+			return steps;
+		}else{
+			steps = 9;
+			this.test = true;
+			return steps;
+		}
+	}
 	
 
 	
@@ -589,7 +664,10 @@ public class MyGLEventListener implements GLEventListener {
 	public float getView_rotx() {
 		return view_rotx;
 	}
-		
+
+	public void setDuree(){
+		this.duree = 0;
+	}
 	public void setView_rotx(float view_rotx) {
 		this.view_rotx = view_rotx;
 	}
